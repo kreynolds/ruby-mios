@@ -32,15 +32,22 @@ module MiOS
       end
 
       def refresh!
-        data = self.class.get "/data_request?id=sdata"
-        @attributes = data.select { |k, v| !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)}
-        @attributes['loadtime'] = Time.at(@attributes['loadtime'])
-        @attributes['serial_number'].strip!
+        data = self.class.get "/data_request?id=user_data"
+        @attributes = Hash[
+          data.select { |k, v|
+            !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)
+          }.map { |k, v|
+            [k.downcase, v]
+          }
+        ]
+        # Convert some time objects
+        ['loadtime', 'devicesync'].each do |attr|
+          @attributes[attr] = Time.at(@attributes[attr].to_i)
+        end
 
-        #puts data.reject { |k, v| !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)}.keys.inspect
         @devices = Hash[
           data['devices'].map { |device|
-            [device['id'], create_device(device)]
+            [device['id'], Device.new(self.class.base_uri, device)]
           }
         ]
 
@@ -56,21 +63,6 @@ module MiOS
       def devices; @devices.values; end
       
       def device_names; devices.map(&:name); end
-
-      private
-
-      def create_device(device_attrs)
-        device_klass = begin
-          MiOS::Device.const_get(MiOS::Device::Categories[device_attrs['category']])
-        rescue NameError => e
-          MiOS::Device::Generic
-        end
-
-        interface = self
-        Class.new(device_klass) { |klass|
-          klass.base_uri(interface.class.base_uri)
-        }.new(self, device_attrs)
-      end
     end
   end
 end

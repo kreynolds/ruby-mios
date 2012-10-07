@@ -40,7 +40,7 @@ module MiOS
 
     def when_complete(&block)
       raise Error::JobTimeout if !exists?
-      Timeout::timeout(10) do
+      Timeout::timeout(20) do
         sleep_interval = 0.25
         
         # If the job is still processing, wait a bit and try again

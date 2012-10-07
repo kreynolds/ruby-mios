@@ -1,6 +1,7 @@
 require 'httparty'
 require "mios/version"
 require "mios/interface"
+require "mios/device"
+require "mios/action"
 require "mios/job"
-require "mios/device/generic"
-Dir[File.dirname(__FILE__) + '/mios/device/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/mios/services/*.rb'].each {|file| require file }
