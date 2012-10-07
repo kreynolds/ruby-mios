@@ -17,7 +17,7 @@ module MiOS
       13 => "SerialPort",
       14 => "SceneController",
       15 => "AV",
-      16 => "Humidity",
+      16 => "HumiditySensor",
       17 => "TemperatureSensor",
       18 => "LightSensor",
       19 => "ZWaveInt",
