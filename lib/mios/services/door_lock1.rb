@@ -5,6 +5,14 @@ module MiOS
         base.instance_variable_set("@doorlock1_urn", "urn:micasaverde-com:serviceId:DoorLock1")
       end
 
+      def min_pin_size
+        integer_for(@doorlock1_urn, 'MinPinSize')
+      end
+
+      def max_pin_size
+        integer_for(@doorlock1_urn, 'MaxPinSize')
+      end
+
       def locked?
         boolean_for(@doorlock1_urn, 'Status')
       end
