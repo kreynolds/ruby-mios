@@ -73,7 +73,7 @@ module MiOS
     end
     
     def reload_status!
-      @status = @obj.class.get("/data_request?id=jobstatus&job=#{@id}&plugin=zwave")['status']
+      @status = MultiJson.load(@obj.client.get("#{@obj.base_uri}/data_request", {:id => 'jobstatus', :job => @id, :plugin => 'zwave', :output_format => :json}).content)['status']
     end
   end
 end

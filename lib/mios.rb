@@ -1,4 +1,5 @@
-require 'httparty'
+require 'httpclient'
+require 'multi_json'
 require "mios/version"
 require "mios/interface"
 require "mios/device"

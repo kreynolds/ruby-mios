@@ -7,19 +7,19 @@ module MiOS
     end
     
     def take(async=false, &block)
-      response = @device.class.get url
+      response = MultiJson.load(@device.client.get("#{@device.base_uri}/data_request", url_params).content)
       # Are there ever more than one jobs from a device action?
       Job.new(@device, response.values.first['JobID'], async, &block)
     end
 
-    def url
-      url = "/data_request?output_format=json&id=action"
-      url += "&DeviceNum=#{@device.id}"
-      url += "&action=#{@action}"
-      url += "&serviceId=#{@service_id}&"
-      url += @parameters.map { |k, v|
-        "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
-      }.join("&")
+    def url_params
+      {
+        :id => 'action',
+        :DeviceNum => @device.attributes["id"],
+        :action => @action,
+        :serviceId => @service_id,
+        :output_format => :json,
+      }.merge(@parameters)
     end
   end
 end
