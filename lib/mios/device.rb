@@ -67,14 +67,10 @@ module MiOS
       @states.map { |state|
         state['service'].split(":").last
       }.uniq.each { |service|
-        begin
-          if MiOS::Services.const_defined?(service)
-            extend MiOS::Services.const_get(service)
-          else
-            $stderr.puts "WARNING: #{service} not yet supported"
-          end
-        rescue Exception => e
-        end
+        if MiOS::Services.const_defined?(service)
+          extend MiOS::Services.const_get(service)
+        else
+          $stderr.puts "WARNING: #{service} not yet supported"
       }
       
       true
