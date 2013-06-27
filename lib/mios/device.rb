@@ -71,6 +71,7 @@ module MiOS
           extend MiOS::Services.const_get(service)
         else
           $stderr.puts "WARNING: #{service} not yet supported"
+        end
       }
       
       true
