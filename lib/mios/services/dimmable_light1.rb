@@ -13,7 +13,7 @@ module MiOS
         new_level = new_load_level.to_i
         new_level = 100 if new_load_level > 100
         new_level = 0 if new_load_level < 0
-        set(@dimming1_urn, "SetLoadLevelTarget", {"newLoadLevelTarget" => new_level}, async, &block)
+        set(@dimming1_urn, "SetLoadLevelTarget", {"newLoadlevelTarget" => new_level}, async, &block)
       end
     end
   end
