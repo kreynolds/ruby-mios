@@ -33,7 +33,6 @@ module MiOS
       ['loadtime', 'devicesync'].each do |attr|
         @attributes[attr] = Time.at(@attributes[attr].to_i)
       end
-
       @devices = Hash[
         data['devices'].map { |device|
           [device['id'], Device.new(@client, @base_uri, device)]

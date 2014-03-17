@@ -42,7 +42,15 @@ module MiOS
     def integer_for(urn, key)
       value_for(urn, key).to_i
     end
-    
+
+    def float_for(urn, key)
+      value_for(urn, key).to_f
+    end
+
+    def time_for(urn, key)
+      Time.at(value_for(urn, key).to_i)
+    end
+
     def value_for(urn, key)
       @states.each do |state_hash|
         if state_hash['service'] == urn
@@ -61,12 +69,12 @@ module MiOS
         data.select { |k, v|
           !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)
         }.to_a
-      ] unless skip_attributes
-      
+      ] unless skip_attributes     
       @states = data['states']
       @states.map { |state|
         state['service'].split(":").last
       }.uniq.each { |service|
+        service.gsub!(/[^a-zA-Z0-9]/, '')
         if MiOS::Services.const_defined?(service)
           extend MiOS::Services.const_get(service)
         else
