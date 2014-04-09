@@ -1,6 +1,6 @@
 module MiOS
   class Device
-    attr_reader :attributes, :client, :base_uri
+    attr_reader :attributes, :client, :base_uri, :states
 
     def initialize(client, base_uri, data)
       @client, @base_uri = client, base_uri

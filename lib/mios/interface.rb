@@ -20,8 +20,14 @@ module MiOS
       "#<MiOS::Interface:0x#{'%x' % (self.object_id << 1)} @base_uri=#{@base_uri} @attributes=#{@attributes.inspect}>"
     end
 
+    def data_request
+      response = @client.get("#{base_uri}/data_request",{:id => "user_data", :output_format => :json})
+      return MultiJson.load(response.content) if response.ok?
+      nil
+    end
+
     def refresh!
-      data = MultiJson.load(@client.get("#{base_uri}/data_request", {:id => "user_data", :output_format => :json}).content)
+      data = data_request
       @attributes = Hash[
         data.select { |k, v|
           !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)
@@ -49,7 +55,7 @@ module MiOS
     end
 
     def devices; @devices.values; end
-    
+
     def device_names; devices.map(&:name); end
   end
 end
