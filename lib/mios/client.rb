@@ -9,7 +9,9 @@ module MiOS
     def data_request(params)
       default_params = { :output_format => :json}
       params = default_params.merge(params)
-      MultiJson.load(@client.get("#{@base_uri}/data_request", params).content)
+      response = @client.get("#{@base_uri}/data_request", params)
+      return MultiJson.load(response.content) if response.ok?
+      raise 'Device not available'
     end
 
   end

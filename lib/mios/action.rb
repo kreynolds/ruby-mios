@@ -7,7 +7,7 @@ module MiOS
     end
 
     def take(async=false, &block)
-      response = @device.interface.data_request(url_params)
+      response = @device.interface.raw_data(url_params)
       # Are there ever more than one jobs from a device action?
       Job.new(@device, response.values.first['JobID'], async, &block)
     end

@@ -1,0 +1,28 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://192.168.50.21:3480/data_request?id=user_data&output_format=json
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.3.4.1, ruby 2.1.0 (2013-12-25))
+      Accept:
+      - "*/*"
+      Date:
+      - Sun, 16 Mar 2014 21:45:39 GMT
+  response:
+    status:
+      code: 500
+      message: Foo
+    headers:
+      Content-Type:
+      - json
+    body:
+      encoding: UTF-8
+      string: ""
+    http_version:
+  recorded_at: Sun, 16 Mar 2014 21:45:39 GMT
+recorded_with: VCR 2.8.0

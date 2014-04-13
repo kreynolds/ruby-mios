@@ -8,6 +8,11 @@ SimpleCov.start
 $LOAD_PATH << "#{File.expand_path(File.dirname(__FILE__))}/../lib"
 require "mios"
 
+RSpec.configure do |config|
+  config.color_enabled = true
+  config.before(:suite) { silence_output }
+  config.after(:suite) { enable_output }
+end
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/support/vcr_cassettes'
@@ -15,6 +20,21 @@ VCR.configure do |c|
   c.allow_http_connections_when_no_cassette = true
 end
 
+# Redirects stderr and stdout to /dev/null.
+def silence_output
+  @orig_stderr = $stderr
+  @orig_stdout = $stdout
+  $stderr = File.new('/dev/null', 'w')
+  $stdout = File.new('/dev/null', 'w')
+end
+
+# Replace stdout and stderr so anything else is output correctly.
+def enable_output
+  $stderr = @orig_stderr
+  $stdout = @orig_stdout
+  @orig_stderr = nil
+  @orig_stdout = nil
+end
 
 def capture_stderr(&block)
   original_stderr = $stderr
