@@ -25,15 +25,4 @@ describe "interface" do
       end
     end
   end
-
-  describe :data_request do
-    it "should return the state of the vera" do
-      VCR.use_cassette('data_request', :allow_playback_repeats => true) do
-        vera = MiOS::Interface.new('http://192.168.50.21:3480')
-        expect(vera.data_request).to eql MultiJson.load(File.read('spec/support/device_data/data_request.json'))
-      end
-    end
-  end
-
 end
-

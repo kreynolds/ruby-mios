@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MiOS::Services::EnergyMetering1 do
   before do
-    @meter = MiOS::Device.new(nil, '', MultiJson.load(File.read('spec/support/device_data/power-meter.json')))
+    @meter = MiOS::Device.new(nil, MultiJson.load(File.read('spec/support/device_data/power-meter.json')))
   end
 
   describe :watts do

@@ -11,10 +11,10 @@ describe MiOS::Device do
   before :each do
     states = [ { 'service' => "foo:Bar" }, { 'service' => "foo:Tar" } ]
     data = { 'id' => '1', 'states' => states }
-    client = double(get:
-      double(content: "{\"Device_Num_1\": #{MultiJson.dump(data)}}"))
+    interface = double()
+    interface.stub(:data_request) { {"Device_Num_1" => data } }
     @output = capture_stderr do
-      @device = MiOS::Device.new(client, 2, data)
+      @device = MiOS::Device.new(interface, data)
     end
   end
 
@@ -31,7 +31,7 @@ describe MiOS::Device do
     end
 
     it "should output a warning for unsupported services" do
-      expect(@output).to eql "WARNING: Tar not yet supported\n"
+      expect(@output).to eql "WARNING: Bar not yet supported\nWARNING: Tar not yet supported\n"
     end
   end
 
