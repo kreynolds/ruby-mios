@@ -1,24 +1,23 @@
 module MiOS
   module Services
     module SwitchPower1
-      def self.extended(base)
-        base.instance_variable_set("@switchpower1_urn", "urn:upnp-org:serviceId:SwitchPower1")
-      end
+
+      URN = 'urn:upnp-org:serviceId:SwitchPower1'
 
       def on?
-        boolean_for(@switchpower1_urn, 'Status')
+        value_for URN, 'Status', as: Boolean
       end
-      
+
       def off?
         !on?
       end
-      
+
       def on!(async=false, &block)
-        set(@switchpower1_urn, "SetTarget", {"newTargetValue" => 1}, async, &block)
+        set(URN, 'SetTarget', { "newTargetValue" => 1 }, async, &block)
       end
 
       def off!(async=false, &block)
-        set(@switchpower1_urn, "SetTarget", {"newTargetValue" => 0}, async, &block)
+        set(URN, 'SetTarget', { "newTargetValue" => 0 }, async, &block)
       end
     end
   end

@@ -1,20 +1,19 @@
 module MiOS
   module Services
     module DoorLock1
-      def self.extended(base)
-        base.instance_variable_set("@doorlock1_urn", "urn:micasaverde-com:serviceId:DoorLock1")
-      end
+
+      URN = 'urn:micasaverde-com:serviceId:DoorLock1'
 
       def min_pin_size
-        integer_for(@doorlock1_urn, 'MinPinSize')
+        value_for URN, 'MinPinSize', as: Integer
       end
 
       def max_pin_size
-        integer_for(@doorlock1_urn, 'MaxPinSize')
+        value_for URN, 'MaxPinSize', as: Integer
       end
 
       def locked?
-        boolean_for(@doorlock1_urn, 'Status')
+        value_for URN, 'Status', as: Boolean
       end
 
       def unlocked?
@@ -22,24 +21,24 @@ module MiOS
       end
 
       def pincodes
-        tmp = value_for(@doorlock1_urn, 'PinCodes')
+        tmp = value_for(URN, 'PinCodes')
         tmp.gsub!(/^<[^>]+>/, '').split("\t")
       end
-      
+
       def lock!(async=false, &block)
-        set(@doorlock1_urn, "SetTarget", {"newTargetValue" => 1}, async, &block)
+        set(URN, 'SetTarget', { "newTargetValue" => 1 }, async, &block)
       end
 
       def unlock!(async=false, &block)
-        set(@doorlock1_urn, "SetTarget", {"newTargetValue" => 0}, async, &block)
+        set(URN, 'SetTarget', { "newTargetValue" => 0 }, async, &block)
       end
-      
+
       def set_pin(name, pin, index, async=false, &block)
-        set(@doorlock1_urn, "SetPin", {"UserCodeName" => name, "newPin" => pin, "user" => index}, async, &block)
+        set(URN, 'SetPin', { "UserCodeName" => name, "newPin" => pin, "user" => index }, async, &block)
       end
 
       def clear_pin(index, async=false, &block)
-        set(@doorlock1_urn, "ClearPin", {"UserCode" => index}, async, &block)
+        set(URN, 'ClearPin', { "UserCode" => index }, async, &block)
       end
     end
   end

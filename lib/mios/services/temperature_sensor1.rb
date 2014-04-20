@@ -1,12 +1,11 @@
 module MiOS
   module Services
     module TemperatureSensor1
-      def self.extended(base)
-        base.instance_variable_set("@temperaturesensor1_urn", "urn:upnp-org:serviceId:TemperatureSensor1")
-      end
+
+      URN = 'urn:upnp-org:serviceId:TemperatureSensor1'
 
       def temperature
-        integer_for(@temperaturesensor1_urn, 'CurrentTemperature')
+        value_for URN 'CurrentTemperature', as: Integer
       end
     end
   end

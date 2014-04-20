@@ -1,88 +1,71 @@
 module MiOS
   class Device
-    attr_reader :attributes, :interface, :states
+    attr_reader :interface
 
-    def initialize(interface, data)
+    def initialize(interface, status_info)
       @interface = interface
-      parse(data)
+      @status_info = status_info
+      initialize_services
     end
 
     def inspect
-      "#<MiOS::Device:0x#{'%x' % (self.object_id << 1)} name=#{@attributes['name']}>"
+      "#<MiOS::Device:0x#{'%x' % (object_id << 1)} name=#{name}>"
     end
 
     def method_missing(method, *args)
-      if @attributes.has_key?(method.to_s)
-        @attributes[method.to_s]
+      if attributes.has_key?(method.to_s)
+        attributes[method.to_s]
       else
         super
       end
     end
 
     def reload
-      load_result = @interface.data_request({:id => 'status', :DeviceNum => attributes['id']})
-      parse(load_result["Device_Num_#{attributes['id']}"], true)
+      @status_info = @interface.device_status(id)
       self
     end
 
-    private
+    def attributes
+      @attributes ||= @status_info.select do |key, val|
+        !val.kind_of?(Hash) && !val.kind_of?(Array)
+      end
+    end
 
-    def set(urn, action, params, async=false, &block)
+    def states
+      @status_info['states']
+    end
+
+  private
+
+    def set(urn, action, params, async = false, &block)
       MiOS::Action.new(self, urn, action, params).take(async, &block)
     end
 
-    def timestamp_for(urn, key)
-      Time.at integer_for(urn, key)
-    end
-
-    def boolean_for(urn, key)
-      integer_for(urn, key) == 1
-    end
-
-    def integer_for(urn, key)
-      value_for(urn, key).to_i
-    end
-
-    def float_for(urn, key)
-      value_for(urn, key).to_f
-    end
-
-    def time_for(urn, key)
-      Time.at(value_for(urn, key).to_i)
-    end
-
-    def value_for(urn, key)
-      @states.each do |state_hash|
-        if state_hash['service'] == urn
-          if state_hash['variable'] == key
-            return state_hash['value']
+    def value_for(urn, key, type = { as: nil })
+      states.each do |state|
+        if state['service'] == urn
+          if state['variable'] == key
+            return MiOS.cast(state['value'], type[:as])
           end
         end
       end
-
-      nil
     end
 
-    def parse(data, skip_attributes=false)
+    def services
+      states.map { |state|
+        state['service'].split(':').last.gsub(/[^a-zA-Z0-9]/, '')
+      }.uniq
+    end
 
-      @attributes = Hash[
-        data.select { |k, v|
-          !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)
-        }.to_a
-      ] unless skip_attributes
-      @states = data['states']
-      @states.map { |state|
-        state['service'].split(":").last
-      }.uniq.each { |service|
-        service.gsub!(/[^a-zA-Z0-9]/, '')
+    def initialize_services
+      services.each do |service|
         if MiOS::Services.const_defined?(service)
           extend MiOS::Services.const_get(service)
         else
           $stderr.puts "WARNING: #{service} not yet supported"
         end
-      }
-
-      true
+      end
     end
+
   end
 end

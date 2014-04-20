@@ -1,6 +1,10 @@
 module MiOS
   class Interface
+    extend Forwardable
+
     attr_reader :attributes
+
+    def_delegator :@client, :device_status
 
     def initialize(base_uri)
       @client = Client.new(base_uri)

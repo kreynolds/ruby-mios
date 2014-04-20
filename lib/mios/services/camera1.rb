@@ -1,12 +1,11 @@
 module MiOS
   module Services
     module Camera1
-      def self.extended(base)
-        base.instance_variable_set("@camera1_urn", "urn:micasaverde-com:serviceId:Camera1")
-      end
-      
+
+      URN = 'urn:micasaverde-com:serviceId:Camera1'
+
       def url
-        value_for(@camera1_urn, 'URL')
+        value_for(URN, 'URL')
       end
 
       def full_url

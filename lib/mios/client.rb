@@ -14,5 +14,10 @@ module MiOS
       raise 'Device not available'
     end
 
+    def device_status(device_id)
+      result = data_request( :id => 'status', :DeviceNum => device_id )
+      result["Device_Num_#{device_id}"]
+    end
+
   end
 end

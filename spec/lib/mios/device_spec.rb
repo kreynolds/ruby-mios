@@ -9,53 +9,66 @@ end
 
 describe MiOS::Device do
   before :each do
-    states = [ { 'service' => "foo:Bar" }, { 'service' => "foo:Tar" } ]
-    data = { 'id' => '1', 'states' => states }
-    interface = double()
-    interface.stub(:data_request) { {"Device_Num_1" => data } }
+    @states = [{ 'service' => 'foo:Bar' }, { 'service' => 'foo:Tar', 'variable' => 'switch', 'value' => 'on' }]
+    data = { 'id' => '1', 'states' => @states, 'name' => 'FooBarDevice' }
+    @interface = double(MiOS::Interface, device_status: data)
     @output = capture_stderr do
-      @device = MiOS::Device.new(interface, data)
+      @device = MiOS::Device.new(@interface, data)
     end
   end
 
-  # it "should correctly parse service names" do
-  #   output = capture_stderr do
-  #     device = MiOS::Device.new(nil, '', MultiJson.load(File.read('spec/support/device_data/echo-energy-manager.json')))
-  #   end
-  #   expect(output).to eql "WARNING: EEMPlugin1 not yet supported\n"
-  # end
+  it 'should correctly parse service names' do
+    output = capture_stderr do
+      device = MiOS::Device.new(nil, MultiJson.load(File.read('spec/support/device_data/echo-energy-manager.json')))
+    end
+    expect(output).to eql "WARNING: EEMPlugin1 not yet supported\n"
+  end
 
   describe :initialize do
-    it "should be an instance of Device" do
+    it 'should be an instance of Device' do
       expect(@device).to be_an_instance_of(MiOS::Device)
     end
 
-    it "should output a warning for unsupported services" do
+    it 'should output a warning for unsupported services' do
       expect(@output).to eql "WARNING: Bar not yet supported\nWARNING: Tar not yet supported\n"
     end
   end
 
   describe :inspect do
-    it "should return a string representation of the object" do
-      expect(@device.inspect).to eql "#<MiOS::Device:0x#{'%x' % (@device.object_id << 1)} name=>"
+    it 'should return a string representation of the object' do
+      expect(@device.inspect).to eql "#<MiOS::Device:0x#{'%x' % (@device.object_id << 1)} name=FooBarDevice>"
     end
   end
 
   describe :method_missing do
-    it "should throw an exception for missing attributes" do
+    it 'should throw an exception for missing attributes' do
       expect {@device.foo}.to raise_error
     end
 
-    it "should not throw an exception for defined attributes" do
-      @device.attributes['id'] = 1
+    it 'should not throw an exception for defined attributes' do
       expect {@device.id}.to_not raise_error
-      expect(@device.id).to eql 1
+      expect(@device.id).to eql '1'
+    end
+  end
+
+  describe :states do
+    it 'should return the current device states' do
+      expect(@device.states).to eql(@states)
     end
   end
 
   describe :reload do
-    it "should return itself" do
-      expect(@device.reload).to eql @device
+    it 'should change state' do
+      expect(@device.states).to eql(@states)
+      @states[1]['value'] = 'off'
+      @device.reload
+      expect(@device.states).to eql(@states)
+    end
+  end
+
+  describe :attributes do
+    it 'should return the attributes hash' do
+      expect(@device.attributes).to eql('id' => '1', 'name' => 'FooBarDevice')
     end
   end
 
