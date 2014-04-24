@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MiOS::Job do
   let(:job) do
-    interface = double('interface', data_request: { 'status' => 1 })
+    interface = double('interface', job_status: 1)
     device = double('device', interface: interface)
     MiOS::Job.new(device, 1)
   end

@@ -35,6 +35,10 @@ module MiOS
       @category ||= Category.new(category_num)
     end
 
+    def room
+      @room ||= Room.new(attributes['room'].to_i)
+    end
+
   private
 
     def category_num

@@ -11,15 +11,15 @@ module MiOS
 
   class Job
     STATUS = {
-      -1 => "Nonexistent",
-      0 => "Waiting",
-      1 => "In progress",
-      2 => "Error",
-      3 => "Aborted",
-      4 => "Completed",
-      5 => "Waiting for callback",
-      6 => "Requeue",
-      7 => "In progress with pending data"
+      -1 => 'Nonexistent',
+      0 => 'Waiting',
+      1 => 'In progress',
+      2 => 'Error',
+      3 => 'Aborted',
+      4 => 'Completed',
+      5 => 'Waiting for callback',
+      6 => 'Requeue',
+      7 => 'In progress with pending data'
     }
 
     STATUS.each do |status_id, method_name|
@@ -30,7 +30,7 @@ module MiOS
 
     attr_reader :id
 
-    def initialize(obj, id, async=false, &block)
+    def initialize(obj, id, async = false, &block)
       @obj, @id = obj, id
       reload_status!
 
@@ -61,7 +61,7 @@ module MiOS
       end
       yield @obj.reload
     rescue Timeout::Error
-      $stderr.puts "Timed out waiting for job status to become complete"
+      $stderr.puts 'Timed out waiting for job status to become complete'
       raise Error::JobTimeout
     end
 
@@ -70,7 +70,7 @@ module MiOS
     end
 
     def reload_status!
-      @status = @obj.interface.data_request({:id => 'jobstatus', :job => @id, :plugin => 'zwave'})['status']
+      @status = @obj.interface.job_status(@id)
     end
   end
 end

@@ -10,9 +10,11 @@ module MiOS
                                   '_Home Energy Monitor', '_Home Energy Monitor Clamp 1',
                                   '_Home Energy Monitor Clamp 2', 'Ergy'] }
 
-    let(:example_categories) { [ Category.new(nil), Category.new(15), Category.new(2),
+    let(:example_categories) { [Category.new(nil), Category.new(15), Category.new(2),
                                  Category.new(6), Category.new(7), Category.new(4),
-                                 Category.new(5) ] }
+                                 Category.new(5)] }
+
+    let(:example_rooms) { [Room.new(1), Room.new(2)] }
 
     describe :initialize do
       context 'when vera unit is available' do
@@ -54,7 +56,6 @@ module MiOS
       end
     end
 
-
     describe :categories do
       it 'should return an array of categories' do
         VCR.use_cassette('data_request') do
@@ -94,6 +95,23 @@ module MiOS
       it 'should return an array of device names' do
         VCR.use_cassette('data_request') do
           expect(mios.device_names).to eql example_device_names
+        end
+      end
+    end
+
+    describe :rooms do
+      it 'should return a list of rooms' do
+        VCR.use_cassette('data_request') do
+          expect(mios.rooms.to_s).to eql(example_rooms.to_s)
+        end
+      end
+    end
+
+    describe :inspect do
+      it 'should return the correct string' do
+        VCR.use_cassette('data_request') do
+          expect(mios.inspect).to include "0x#{'%x' % (mios.object_id << 1)}"
+          expect(mios.inspect).to include mios.attributes.inspect
         end
       end
     end

@@ -30,7 +30,7 @@ module MiOS
     end
 
     def to_s
-      inspect
+      label
     end
 
   private

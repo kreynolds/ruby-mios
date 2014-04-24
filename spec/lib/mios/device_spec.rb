@@ -3,19 +3,14 @@ require 'spec_helper'
 module MiOS
   describe Device do
     before :each do
-      @states = [{ 'service' => 'foo:Bar' }, { 'service' => 'foo:Tar', 'variable' => 'switch', 'value' => 'on' }]
-      data = { 'id' => '1', 'states' => @states, 'name' => 'FooBarDevice', 'category_num' => 2 }
-      @interface = double(MiOS::Interface, device_status: data)
-      @output = capture_stderr do
-        @device = MiOS::Device.new(@interface, data)
+      @data_request = MultiJson.load(File.read('spec/support/device_data/data_request.json'))
+      @states = @data_request['devices'][11]['states']
+      @attributes = MultiJson.load(File.read('spec/support/device_data/device_attributes.json'))
+      VCR.use_cassette('data_request') do
+        @interface =  MiOS::Interface.new('http://192.168.50.21:3480')
       end
-    end
-
-    it 'should correctly parse service names' do
-      output = capture_stderr do
-        device = MiOS::Device.new(nil, MultiJson.load(File.read('spec/support/device_data/echo-energy-manager.json')))
-      end
-      expect(output).to eql "WARNING: EEMPlugin1 not yet supported\n"
+      @interface.stub(:device_status).and_return('id' => '12', 'states' => @states, 'name' => 'On/Off Outlet')
+      @device = @interface.devices[11]
     end
 
     describe :initialize do
@@ -24,13 +19,16 @@ module MiOS
       end
 
       it 'should output a warning for unsupported services' do
-        expect(@output).to eql "WARNING: Bar not yet supported\nWARNING: Tar not yet supported\n"
+        output = capture_stderr do
+          device = MiOS::Device.new(nil, MultiJson.load(File.read('spec/support/device_data/echo-energy-manager.json')))
+        end
+        expect(output).to eql "WARNING: EEMPlugin1 not yet supported\n"
       end
     end
 
     describe :inspect do
       it 'should return a string representation of the object' do
-        expect(@device.inspect).to eql "#<MiOS::Device:0x#{'%x' % (@device.object_id << 1)} name=FooBarDevice>"
+        expect(@device.inspect).to eql "#<MiOS::Device:0x#{'%x' % (@device.object_id << 1)} name=On/Off Outlet>"
       end
     end
 
@@ -41,13 +39,19 @@ module MiOS
 
       it 'should not throw an exception for defined attributes' do
         expect {@device.id}.to_not raise_error
-        expect(@device.id).to eql '1'
+        expect(@device.id).to eql '12'
       end
     end
 
     describe :states do
       it 'should return the current device states' do
         expect(@device.states).to eql(@states)
+      end
+    end
+
+    describe :room do
+      it 'should return the correct room for the device' do
+        expect(@device.room.name).to eql 'Living Room'
       end
     end
 
@@ -60,15 +64,15 @@ module MiOS
       end
     end
 
-    describe :attributes do
-      it 'should return the attributes hash' do
-        expect(@device.attributes).to eql('id' => '1', 'name' => 'FooBarDevice', 'category_num' => 2)
-      end
-    end
-
     describe :category do
       it 'should return the appropriate category' do
         expect(@device.category.label).to eql 'Lights'
+      end
+    end
+
+    describe :attributes do
+      it 'should return the attributes hash' do
+        expect(@device.attributes).to eql(@attributes)
       end
     end
   end

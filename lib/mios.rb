@@ -7,5 +7,6 @@ require 'mios/action'
 require 'mios/job'
 require 'mios/client'
 require 'mios/category'
+require 'mios/room'
 require 'mios/type_conversion'
 Dir[File.dirname(__FILE__) + '/mios/services/*.rb'].each {|file| require file }

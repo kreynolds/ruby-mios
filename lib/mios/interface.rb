@@ -4,9 +4,13 @@ module MiOS
     extend Forwardable
 
     def_delegator :@client, :device_status
+    def_delegator :@client, :action
+    def_delegator :@client, :job_status
 
     def initialize(base_uri)
       @client = Client.new(base_uri)
+      Category.filters = raw_data['category_filter']
+      load_rooms
     end
 
     def refresh!
@@ -21,6 +25,10 @@ module MiOS
       devices.select { |device| device.category.label == label }
     end
 
+    def rooms
+      Room.all
+    end
+
     def device_names
       devices.map(&:name)
     end
@@ -30,7 +38,7 @@ module MiOS
     end
 
     def categories
-      @categories ||= load_categories
+      @categories ||= Category.all
     end
 
     def method_missing(method, *args)
@@ -45,15 +53,7 @@ module MiOS
   private
 
     def raw_data
-      @raw_data ||= raw_data_request
-    end
-
-    def raw_data_request
-      @client.data_request(id: 'user_data')
-    end
-
-    def category_filters
-      raw_data['category_filter']
+      @raw_data ||= @client.data_request(id: 'user_data')
     end
 
     def load_attributes
@@ -71,20 +71,14 @@ module MiOS
       attributes
     end
 
-    def load_categories
-      Category.filters = category_filters
-      Category.all
+    def load_rooms
+      raw_data['rooms'].each { |r| Room.rooms[r['id']] = r['name'] }
     end
 
     def load_devices
       raw_data['devices'].map do |device|
-        device['category'] = category_for(device['category_num'])
         Device.new(self, device)
       end
-    end
-
-    def category_for(category_num)
-      categories.find{ |c| c.ids.include?(category_num) } || categories.find{ |c| c.label == 'Unknown'}
     end
   end
 end

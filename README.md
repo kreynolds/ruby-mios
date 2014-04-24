@@ -29,13 +29,13 @@ occur if used improperly.
 
 ### Devices could be anything of course, assuming here the first is a switch
     switch = mios.devices[0]
-    
+
 ### Turn the switch off (light switch or outlet or anything classed as a switch)
     switch.off!
-    
+
 ### The job object is returned from calls that require API calls
     job = switch.on!
-    
+
 ### Execute some code once the job has finished
     switch.off! { |obj|
       puts "The #{obj.name} is now off"
@@ -48,6 +48,11 @@ occur if used improperly.
     }
     puts "This will output immediately"
     sleep(5) # Sleep to wait for the thread to finish, will clean this up later
+
+## Additional information
+
+http://wiki.micasaverde.com/index.php/Category:Development
+http://wiki.micasaverde.com/index.php/Luup_Requests
 
 ## Contributing
 
