@@ -1,6 +1,6 @@
 module MiOS
   class Device
-    attr_reader :interface
+    attr_reader :interface, :category
 
     def initialize(interface, status_info)
       @interface = interface
@@ -13,11 +13,7 @@ module MiOS
     end
 
     def method_missing(method, *args)
-      if attributes.has_key?(method.to_s)
-        attributes[method.to_s]
-      else
-        super
-      end
+      attributes[method.to_s] || super
     end
 
     def reload
@@ -35,7 +31,15 @@ module MiOS
       @status_info['states']
     end
 
+    def category
+      @category ||= Category.new(category_num)
+    end
+
   private
+
+    def category_num
+      attributes['category_num'] || 0
+    end
 
     def set(urn, action, params, async = false, &block)
       MiOS::Action.new(self, urn, action, params).take(async, &block)

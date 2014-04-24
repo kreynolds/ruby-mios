@@ -1,42 +1,45 @@
 module MiOS
+
   class Interface
     extend Forwardable
-
-    attr_reader :attributes
 
     def_delegator :@client, :device_status
 
     def initialize(base_uri)
       @client = Client.new(base_uri)
-      load_attributes
-      load_devices
     end
 
     def refresh!
-      @raw_data = nil
-      load_attributes
-      load_devices
+      @raw_data, @devices, @attributes, @categories = nil
     end
 
     def devices
-      @devices.values
+      @devices ||= load_devices
     end
 
-    def categories
-      devices.map { |device| device.category }.uniq.sort
+    def devices_for_label(label)
+      devices.select { |device| device.category.label == label }
     end
 
     def device_names
       devices.map(&:name)
     end
 
+    def attributes
+      @attributes ||= load_attributes
+    end
+
+    def categories
+      @categories ||= load_categories
+    end
+
     def method_missing(method, *args)
-      return @attributes[method.to_s] if @attributes.has_key?(method.to_s)
+      return attributes[method.to_s] if attributes.has_key?(method.to_s)
       super
     end
 
     def inspect
-      "#<MiOS::Interface:0x#{'%x' % (self.object_id << 1)} uri=#{@client.base_uri} @attributes=#{@attributes.inspect}>"
+      "#<MiOS::Interface:0x#{'%x' % (object_id << 1)} uri=#{@client.base_uri} @attributes=#{attributes.inspect}>"
     end
 
   private
@@ -46,30 +49,42 @@ module MiOS
     end
 
     def raw_data_request
-      @client.data_request(id: "user_data")
+      @client.data_request(id: 'user_data')
+    end
+
+    def category_filters
+      raw_data['category_filter']
     end
 
     def load_attributes
-      @attributes = Hash[
-        raw_data.select { |k, v|
-          !raw_data[k].kind_of?(Hash) and !raw_data[k].kind_of?(Array)
-        }.map { |k, v|
-          [k.downcase, v]
-        }
+      attributes = Hash[
+        raw_data
+          .select { |k, v| !raw_data[k].kind_of?(Hash) && !raw_data[k].kind_of?(Array) }
+          .map { |k, v| [k.downcase, v] }
       ]
 
       # Convert some time objects
       ['loadtime', 'devicesync'].each do |attr|
-        @attributes[attr] = Time.at(@attributes[attr].to_i)
+        attributes[attr] = Time.at(attributes[attr].to_i)
       end
+
+      attributes
+    end
+
+    def load_categories
+      Category.filters = category_filters
+      Category.all
     end
 
     def load_devices
-      @devices = Hash[
-        raw_data['devices'].map { |device|
-          [device['id'], Device.new(self, device)]
-        }
-      ]
+      raw_data['devices'].map do |device|
+        device['category'] = category_for(device['category_num'])
+        Device.new(self, device)
+      end
+    end
+
+    def category_for(category_num)
+      categories.find{ |c| c.ids.include?(category_num) } || categories.find{ |c| c.label == 'Unknown'}
     end
   end
 end
