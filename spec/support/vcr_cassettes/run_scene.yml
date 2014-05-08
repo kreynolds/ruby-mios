@@ -1,0 +1,28 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://192.168.50.21:3480/data_request?SceneNum=5&action=RunScene&id=action&output_format=json&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.3.4.1, ruby 2.1.0 (2013-12-25))
+      Accept:
+      - "*/*"
+      Date:
+      - Thu, 08 May 2014 02:53:46 GMT
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - json
+    body:
+      encoding: UTF-8
+      string: "{ \"u:RunSceneResponse\": { \"OK\": \"OK\" } }"
+    http_version: 
+  recorded_at: Thu, 08 May 2014 02:53:46 GMT
+recorded_with: VCR 2.8.0

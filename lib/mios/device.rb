@@ -46,7 +46,10 @@ module MiOS
     end
 
     def set(urn, action, params, async = false, &block)
-      MiOS::Action.new(self, urn, action, params).take(async, &block)
+      params.merge!('DeviceNum' => id)
+      Action.new(interface, urn, action, params).take(async) do
+        yield reload if block_given?
+      end
     end
 
     def value_for(urn, key, type = { as: nil })

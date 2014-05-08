@@ -1,24 +1,31 @@
-require 'cgi'
-
 module MiOS
   class Action
-    def initialize(device, service_id, action, parameters={})
-      @device, @service_id, @action, @parameters = device, service_id, action, parameters
+    def initialize(interface, service_id, action, parameters = {})
+      @interface = interface
+      @service_id = service_id
+      @action = action
+      @parameters = parameters
     end
 
-    def take(async=false, &block)
-      response = @device.interface.action(url_params)
-      # Are there ever more than one jobs from a device action?
-      Job.new(@device, response.values.first['JobID'], async, &block)
+    def take(async = false, &block)
+      response = @interface.action(@action, @service_id, @parameters)
+      # Is there ever more than one job from a device action?
+
+      if has_job?(response)
+        Job.new(@interface, response.values.first['JobID'], async, &block)
+      else
+        yield if block_given?
+      end
+      response
+      # { 'u:RunSceneResponse' => { 'OK' => 'OK' } }
+      # { 'u:SetTargetResponse' => { 'JobID' => '2' } }
     end
 
-    def url_params
-      {
-        :id => 'action',
-        :DeviceNum => @device.attributes["id"],
-        :action => @action,
-        :serviceId => @service_id,
-      }.merge(@parameters)
+  private
+
+    def has_job?(response)
+      response.values.first.include? 'JobID'
     end
+
   end
 end

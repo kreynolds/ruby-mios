@@ -107,6 +107,14 @@ module MiOS
       end
     end
 
+    describe :scenes do
+      it 'should return a list of scenes' do
+        VCR.use_cassette('data_request') do
+          expect(mios.scenes.to_s).to eql('{2=>2: Alarm Breach, 3=>3: Alarm Breach, 4=>4: Leaving House, 5=>5: Entering Home}')
+        end
+      end
+    end
+
     describe :inspect do
       it 'should return the correct string' do
         VCR.use_cassette('data_request') do

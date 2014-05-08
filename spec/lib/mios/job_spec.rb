@@ -3,8 +3,7 @@ require 'spec_helper'
 describe MiOS::Job do
   let(:job) do
     interface = double('interface', job_status: 1)
-    device = double('device', interface: interface)
-    MiOS::Job.new(device, 1)
+    MiOS::Job.new(interface, 1)
   end
 
   def stub_job_status(val)

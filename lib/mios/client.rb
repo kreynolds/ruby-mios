@@ -20,8 +20,12 @@ module MiOS
       result["Device_Num_#{device_id}"]
     end
 
-    def action(params)
-      result = data_request(params)
+    def action(action, service_id, params = {})
+      data_request({
+        id: 'action',
+        action: action,
+        serviceId: service_id,
+      }.merge(params))
     end
 
     def job_status(job_id)

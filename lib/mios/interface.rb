@@ -11,6 +11,7 @@ module MiOS
       @client = Client.new(base_uri)
       Category.filters = raw_data['category_filter']
       load_rooms
+      load_scenes
     end
 
     def refresh!
@@ -27,6 +28,10 @@ module MiOS
 
     def rooms
       Room.all
+    end
+
+    def scenes
+      Scene.all
     end
 
     def device_names
@@ -73,6 +78,10 @@ module MiOS
 
     def load_rooms
       raw_data['rooms'].each { |r| Room.rooms[r['id']] = r['name'] }
+    end
+
+    def load_scenes
+      raw_data['scenes'].each { |s| Scene.new(self, s['id'], s['name']) }
     end
 
     def load_devices

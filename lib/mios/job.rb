@@ -30,8 +30,8 @@ module MiOS
 
     attr_reader :id
 
-    def initialize(obj, id, async = false, &block)
-      @obj, @id = obj, id
+    def initialize(interface, id, async = false, &block)
+      @interface, @id = interface, id
       reload_status!
 
       if block_given?
@@ -59,7 +59,7 @@ module MiOS
         raise Error::JobAborted if aborted?
         raise Error::JobRequeue if requeue?
       end
-      yield @obj.reload
+      yield
     rescue Timeout::Error
       $stderr.puts 'Timed out waiting for job status to become complete'
       raise Error::JobTimeout
@@ -70,7 +70,7 @@ module MiOS
     end
 
     def reload_status!
-      @status = @obj.interface.job_status(@id)
+      @status = @interface.job_status(@id)
     end
   end
 end
