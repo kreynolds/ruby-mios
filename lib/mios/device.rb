@@ -63,6 +63,10 @@ module MiOS
       nil
     end
     
+    def is_num? (str_to_test)
+      !!(str_to_test =~ /^[-+]?[0-9]+$/)
+    end
+
     def parse(data, skip_attributes=false)
 
       @attributes = Hash[
@@ -72,7 +76,8 @@ module MiOS
       ] unless skip_attributes     
       @states = data['states']
       @states.map { |state|
-        state['service'].split(":").last
+        parts = state['service'].split(":")
+        parts.select{ |elem| !is_num?(elem)}.last 
       }.uniq.each { |service|
         service.gsub!(/[^a-zA-Z0-9]/, '')
         if MiOS::Services.const_defined?(service)
@@ -81,7 +86,7 @@ module MiOS
           $stderr.puts "WARNING: #{service} not yet supported"
         end
       }
-      
+     
       true
     end
   end
