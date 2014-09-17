@@ -14,7 +14,7 @@ module MiOS
                                  Category.new(6), Category.new(7), Category.new(4),
                                  Category.new(5)] }
 
-    let(:example_rooms) { [Room.new(1), Room.new(2)] }
+    let(:example_rooms) { '{1=>1: Living Room, 2=>2: Hallway}' }
 
     describe :initialize do
       context 'when vera unit is available' do
@@ -102,7 +102,7 @@ module MiOS
     describe :rooms do
       it 'should return a list of rooms' do
         VCR.use_cassette('data_request') do
-          expect(mios.rooms.to_s).to eql(example_rooms.to_s)
+          expect(mios.rooms.to_s).to eql(example_rooms)
         end
       end
     end

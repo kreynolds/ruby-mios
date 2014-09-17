@@ -36,7 +36,7 @@ module MiOS
     end
 
     def room
-      @room ||= Room.new(attributes['room'].to_i)
+      @room ||= Room.all[attributes['room'].to_i]
     end
 
   private

@@ -17,8 +17,6 @@ module MiOS
         yield if block_given?
       end
       response
-      # { 'u:RunSceneResponse' => { 'OK' => 'OK' } }
-      # { 'u:SetTargetResponse' => { 'JobID' => '2' } }
     end
 
   private

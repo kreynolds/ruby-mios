@@ -3,8 +3,10 @@ require 'spec_helper'
 module MiOS
   describe Room do
     before do
-      Room.rooms = { 1 => 'Kitchen', 2 => 'Living Room', 3 => 'Bathroom' }
-      @room = Room.new(2)
+     # Room.rooms = { 1 => 'Kitchen', 2 => 'Living Room', 3 => 'Bathroom' }
+      @room = Room.new(2, 'Living Room')
+      Room.new(1, 'Kitchen')
+      Room.new(3, 'Bathroom')
     end
 
     describe :initialize do

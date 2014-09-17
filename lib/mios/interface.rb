@@ -77,7 +77,7 @@ module MiOS
     end
 
     def load_rooms
-      raw_data['rooms'].each { |r| Room.rooms[r['id']] = r['name'] }
+      raw_data['rooms'].each { |r| Room.new(r['id'], r['name']) }
     end
 
     def load_scenes

@@ -49,6 +49,15 @@ occur if used improperly.
     puts "This will output immediately"
     sleep(5) # Sleep to wait for the thread to finish, will clean this up later
 
+### List Defined Rooms
+    mios.rooms
+
+### List Defined Scenes
+    mios.scenes
+
+### Run a scene
+    mios.scenes[0].run   # => 'OK'
+
 ## Additional information
 
 http://wiki.micasaverde.com/index.php/Category:Development

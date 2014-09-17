@@ -3,9 +3,10 @@ module MiOS
     attr_accessor :id, :name
     @@rooms = {}
 
-    def initialize(id)
-      @id = id
-      @name = @@rooms[id]
+    def initialize(id, name)
+      @id = id.to_i
+      @name = name
+      @@rooms[@id] = self
     end
 
     def inspect
@@ -16,16 +17,8 @@ module MiOS
       name
     end
 
-    def self.rooms=(rooms)
-      @@rooms = rooms
-    end
-
-    def self.rooms
-      @@rooms
-    end
-
     def self.all
-      @@rooms.each_with_object([]) { |(id, name), result| result << new(id) }
+      @@rooms
     end
 
   end
