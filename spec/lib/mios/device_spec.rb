@@ -3,9 +3,9 @@ require 'spec_helper'
 module MiOS
   describe Device do
     before :each do
-      @data_request = MultiJson.load(File.read('spec/support/device_data/data_request.json'))
+      @data_request = JSON.parse(File.read('spec/support/device_data/data_request.json'))
       @states = @data_request['devices'][11]['states']
-      @attributes = MultiJson.load(File.read('spec/support/device_data/device_attributes.json'))
+      @attributes = JSON.parse(File.read('spec/support/device_data/device_attributes.json'))
       VCR.use_cassette('data_request') do
         @interface =  MiOS::Interface.new('http://192.168.50.21:3480')
       end
@@ -20,7 +20,7 @@ module MiOS
 
       it 'should output a warning for unsupported services' do
         output = capture_stderr do
-          device = MiOS::Device.new(nil, MultiJson.load(File.read('spec/support/device_data/echo-energy-manager.json')))
+          device = MiOS::Device.new(nil, JSON.parse(File.read('spec/support/device_data/echo-energy-manager.json')))
         end
         expect(output).to eql "WARNING: EEMPlugin1 not yet supported\n"
       end

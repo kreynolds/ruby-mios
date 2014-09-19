@@ -3,7 +3,7 @@ require 'spec_helper'
 module MiOS
   describe Category do
     before do
-      Category.filters = MultiJson.load(File.read('spec/support/device_data/category_filter.json'))
+      Category.filters = JSON.parse(File.read('spec/support/device_data/category_filter.json'))
       @category = Category.new(16)
     end
 

@@ -3,7 +3,7 @@ require 'spec_helper'
 module MiOS
   describe Interface do
     let(:mios) { MiOS::Interface.new('http://192.168.50.21:3480') }
-    let(:example_data_request) { MultiJson.load(File.read('spec/support/device_data/data_request.json')) }
+    let(:example_data_request) { JSON.parse(File.read('spec/support/device_data/data_request.json')) }
     let(:example_device_names) { ['ZWave', '_Scene Controller', 'Thermostat', 'Caddx NX584 Security System',
                                   'Outdoor Switch', '_GE Advanced Remote', 'Serial_Portlist_2146893057',
                                   'ftdi_sio', 'Partition 1', 'Zone 1', 'Generic IP Camera', 'On/Off Outlet',

@@ -1,6 +1,6 @@
 module MiOS
   class Client
-    attr_accessor :base_uri
+    attr_reader :base_uri
 
     def initialize(base_uri)
       @base_uri = base_uri
@@ -11,7 +11,7 @@ module MiOS
       default_params = { output_format: :json }
       params = default_params.merge(params)
       response = @client.get("#{@base_uri}/data_request", params)
-      return MultiJson.load(response.content) if response.ok?
+      return JSON.parse(response.content) if response.ok?
       fail 'Device not available'
     end
 
