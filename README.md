@@ -16,6 +16,10 @@ Or install it yourself as:
 
     $ gem install mios
 
+## Requirements
+
+Ruby 1.9 or greater
+
 ## Usage
 
 MiOS works on a job queue. If you wish to change an attribute or the status of a particular device, you must submit a

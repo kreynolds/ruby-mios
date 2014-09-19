@@ -13,14 +13,14 @@ describe MiOS::Client do
 
     it "returns ruby object from parsed json" do
       VCR.use_cassette('data_request') do
-        test_params = {:id => "user_data", :output_format => :json}
+        test_params = { id: 'user_data', output_format: :json}
         expect(client.data_request(test_params)).to eq data_request_json
       end
     end
 
     it "defaults to json output format" do
       VCR.use_cassette('data_request') do
-        test_params = {:id => "user_data"}
+        test_params = { id: 'user_data' }
         expect(client.data_request(test_params)).to eq data_request_json
       end
     end
