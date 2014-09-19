@@ -5,11 +5,7 @@ module MiOS
     def initialize(interface, status_info)
       @interface = interface
       @status_info = status_info
-      initialize_services
-    end
-
-    def inspect
-      "#<MiOS::Device:0x#{'%x' % (object_id << 1)} name=#{name}>"
+      initialize_services!
     end
 
     def method_missing(method, *args)
@@ -32,11 +28,11 @@ module MiOS
     end
 
     def category
-      @category ||= Category.new(category_num)
+      @category ||= @interface.categories.find_by_id(category_num)
     end
 
     def room
-      @room ||= Room.all[attributes['room'].to_i]
+      @room ||=  @interface.rooms.find { |r| r.id == attributes['room'].to_i }
     end
 
   private
@@ -60,6 +56,7 @@ module MiOS
           end
         end
       end
+      nil
     end
 
     def services
@@ -68,7 +65,7 @@ module MiOS
       }.uniq
     end
 
-    def initialize_services
+    def initialize_services!
       services.each do |service|
         if MiOS::Services.const_defined?(service)
           extend MiOS::Services.const_get(service)
@@ -76,6 +73,7 @@ module MiOS
           $stderr.puts "WARNING: #{service} not yet supported"
         end
       end
+      nil
     end
 
   end

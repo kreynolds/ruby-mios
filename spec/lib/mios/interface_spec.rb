@@ -9,12 +9,7 @@ module MiOS
                                   'ftdi_sio', 'Partition 1', 'Zone 1', 'Generic IP Camera', 'On/Off Outlet',
                                   '_Home Energy Monitor', '_Home Energy Monitor Clamp 1',
                                   '_Home Energy Monitor Clamp 2', 'Ergy'] }
-
-    let(:example_categories) { [Category.new(nil), Category.new(15), Category.new(2),
-                                 Category.new(6), Category.new(7), Category.new(4),
-                                 Category.new(5)] }
-
-    let(:example_rooms) { '{1=>1: Living Room, 2=>2: Hallway}' }
+    let(:example_rooms) { "[#<MiOS::Room:0x00000104b49f38 @id=1, @name=\"Living Room\">, #<MiOS::Room:0x00000104b49ec0 @id=2, @name=\"Hallway\">]" }
 
     describe :initialize do
       context 'when vera unit is available' do
@@ -57,9 +52,9 @@ module MiOS
     end
 
     describe :categories do
-      it 'should return an array of categories' do
+      it 'should return a category collection' do
         VCR.use_cassette('data_request') do
-          expect(mios.categories.to_s).to eql example_categories.to_s
+          expect(mios.categories).to_not be_nil
         end
       end
     end
@@ -102,7 +97,7 @@ module MiOS
     describe :rooms do
       it 'should return a list of rooms' do
         VCR.use_cassette('data_request') do
-          expect(mios.rooms.to_s).to eql(example_rooms)
+          expect(mios.rooms.length).to eql(2)
         end
       end
     end
@@ -110,16 +105,7 @@ module MiOS
     describe :scenes do
       it 'should return a list of scenes' do
         VCR.use_cassette('data_request') do
-          expect(mios.scenes.to_s).to eql('{2=>2: Alarm Breach, 3=>3: Alarm Breach, 4=>4: Leaving House, 5=>5: Entering Home}')
-        end
-      end
-    end
-
-    describe :inspect do
-      it 'should return the correct string' do
-        VCR.use_cassette('data_request') do
-          expect(mios.inspect).to include "0x#{'%x' % (mios.object_id << 1)}"
-          expect(mios.inspect).to include mios.attributes.inspect
+          expect(mios.scenes.length).to eql(4)
         end
       end
     end

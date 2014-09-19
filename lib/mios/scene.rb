@@ -1,17 +1,11 @@
 module MiOS
   class Scene
-    attr_accessor :id, :name
-    @@scenes = {}
+    attr_reader :id, :name
 
     def initialize(interface, id, name)
       @interface = interface
       @id = id.to_i
       @name = name
-      @@scenes[@id] = self
-    end
-
-    def inspect
-      "#{id}: #{name}"
     end
 
     def to_s
@@ -24,10 +18,5 @@ module MiOS
         'RunScene', 'SceneNum' => @id).take
       response.values.first.values.first
     end
-
-    def self.all
-      @@scenes
-    end
-
   end
 end

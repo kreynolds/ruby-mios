@@ -22,6 +22,7 @@ module MiOS
       7 => 'In progress with pending data'
     }
 
+    # Define a query method for each status (eg. waiting?, in_progress?)
     STATUS.each do |status_id, method_name|
       define_method("#{method_name.downcase.gsub(' ', '_')}?") do
         status == status_id
@@ -31,7 +32,8 @@ module MiOS
     attr_reader :id
 
     def initialize(interface, id, async = false, &block)
-      @interface, @id = interface, id
+      @interface = interface
+      @id = id
       reload_status!
 
       if block_given?

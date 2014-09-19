@@ -9,29 +9,30 @@ module MiOS
 
     def initialize(base_uri)
       @client = Client.new(base_uri)
-      Category.filters = raw_data['category_filter']
-      load_rooms
-      load_scenes
     end
 
     def refresh!
-      @raw_data, @devices, @attributes, @categories = nil
+      @raw_data, @devices, @attributes, @categories, @rooms, @scenes = nil
+    end
+
+    def categories
+      @categories ||= CategoryCollection.new(raw_data['category_filter'])
     end
 
     def devices
-      @devices ||= load_devices
+      @devices ||= raw_data['devices'].collect { |d| Device.new(self, d) }
     end
 
     def devices_for_label(label)
-      devices.select { |device| device.category.label == label }
+      devices.select { |device| device.category && device.category.label == label }
     end
 
     def rooms
-      Room.all
+      @rooms ||= raw_data['rooms'].collect { |r| Room.new(r['id'], r['name']) }
     end
 
     def scenes
-      Scene.all
+      @scenes ||= raw_data['scenes'].collect { |s| Scene.new(self, s['id'], s['name']) }
     end
 
     def device_names
@@ -42,17 +43,8 @@ module MiOS
       @attributes ||= load_attributes
     end
 
-    def categories
-      @categories ||= Category.all
-    end
-
     def method_missing(method, *args)
-      return attributes[method.to_s] if attributes.has_key?(method.to_s)
-      super
-    end
-
-    def inspect
-      "#<MiOS::Interface:0x#{'%x' % (object_id << 1)} uri=#{@client.base_uri} @attributes=#{attributes.inspect}>"
+      attributes[method.to_s] || super
     end
 
   private
@@ -70,24 +62,10 @@ module MiOS
 
       # Convert some time objects
       ['loadtime', 'devicesync'].each do |attr|
-        attributes[attr] = Time.at(attributes[attr].to_i)
+        attributes[attr] = MiOS.cast(attributes[attr], as: Time)
       end
 
       attributes
-    end
-
-    def load_rooms
-      raw_data['rooms'].each { |r| Room.new(r['id'], r['name']) }
-    end
-
-    def load_scenes
-      raw_data['scenes'].each { |s| Scene.new(self, s['id'], s['name']) }
-    end
-
-    def load_devices
-      raw_data['devices'].map do |device|
-        Device.new(self, device)
-      end
     end
   end
 end

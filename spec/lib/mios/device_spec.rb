@@ -8,9 +8,9 @@ module MiOS
       @attributes = JSON.parse(File.read('spec/support/device_data/device_attributes.json'))
       VCR.use_cassette('data_request') do
         @interface =  MiOS::Interface.new('http://192.168.50.21:3480')
+        @interface.stub(:device_status).and_return('id' => '12', 'states' => @states, 'name' => 'On/Off Outlet')
+        @device = @interface.devices[11]
       end
-      @interface.stub(:device_status).and_return('id' => '12', 'states' => @states, 'name' => 'On/Off Outlet')
-      @device = @interface.devices[11]
     end
 
     describe :initialize do
@@ -23,12 +23,6 @@ module MiOS
           device = MiOS::Device.new(nil, JSON.parse(File.read('spec/support/device_data/echo-energy-manager.json')))
         end
         expect(output).to eql "WARNING: EEMPlugin1 not yet supported\n"
-      end
-    end
-
-    describe :inspect do
-      it 'should return a string representation of the object' do
-        expect(@device.inspect).to eql "#<MiOS::Device:0x#{'%x' % (@device.object_id << 1)} name=On/Off Outlet>"
       end
     end
 
