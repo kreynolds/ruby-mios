@@ -2,12 +2,11 @@
 module MiOS
   module Services
     module HumiditySensor1
-      def self.extended(base)
-        base.instance_variable_set("@humiditysensor1_urn", "urn:upnp-org:serviceId:HumiditySensor1")
-      end
+
+      URN = 'urn:upnp-org:serviceId:HumiditySensor1'
 
       def humidity
-        integer_for(@humiditysensor1_urn, 'CurrentHumidity')
+        value_for URN, 'CurrentHumidity', as: Integer
       end
     end
   end

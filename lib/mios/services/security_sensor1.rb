@@ -1,32 +1,31 @@
 module MiOS
   module Services
     module SecuritySensor1
-      def self.extended(base)
-        base.instance_variable_set("@securitysensor1_urn", "urn:micasaverde-com:serviceId:SecuritySensor1")
-      end
+
+      URN = 'urn:micasaverde-com:serviceId:SecuritySensor1'
 
       def tripped?
-        boolean_for(@securitysensor1_urn, 'Tripped')
+        value_for URN, 'Tripped', as: Boolean
       end
-      
+
       def armed?
-        boolean_for(@securitysensor1_urn, 'Armed')
+        value_for URN, 'Armed', as: Boolean
       end
-      
+
       def disarmed?
         !armed?
       end
-      
+
       def lasttrip
-        timestamp_for(@securitysensor1_urn, 'LastTrip')
+        value_for URN, 'LastTrip', as: Time
       end
-      
+
       def arm!(async=false, &block)
-        set(@securitysensor1_urn, "SetArmed", {"newArmedValue" => 1}, async, &block)
+        set(URN, 'SetArmed', { "newArmedValue" => 1 }, async, &block)
       end
 
       def disarm!(async=false, &block)
-        set(@securitysensor1_urn, "SetArmed", {"newArmedValue" => 0}, async, &block)
+        set(URN, 'SetArmed', { "newArmedValue" => 0 }, async, &block)
       end
     end
   end

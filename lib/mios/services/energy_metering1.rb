@@ -1,20 +1,19 @@
 module MiOS
   module Services
     module EnergyMetering1
-      def self.extended(base)
-        base.instance_variable_set("@energymetering1_urn", "urn:micasaverde-com:serviceId:EnergyMetering1")
-      end
+
+      URN = 'urn:micasaverde-com:serviceId:EnergyMetering1'
 
       def watts
-        integer_for(@energymetering1_urn, 'Watts')
+        value_for URN, 'Watts', as: Integer
       end
 
       def kWh
-        float_for(@energymetering1_urn, 'KWH')
+        value_for URN, 'KWH', as: Float
       end
 
       def last_reading_at
-        time_for(@energymetering1_urn, "KWHReading")
+        value_for URN, 'KWHReading', as: Time
       end
     end
   end

@@ -1,28 +1,27 @@
 module MiOS
   module Services
     module HaDevice1
-      def self.extended(base)
-        base.instance_variable_set("@hadevice1_urn", "urn:micasaverde-com:serviceId:HaDevice1")
-      end
+
+      URN = 'urn:micasaverde-com:serviceId:HaDevice1'
 
       def auto_configure
-        boolean_for(@hadevice1_urn, "AutoConfigure")
+        value_for(URN, 'AutoConfigure', as: Boolean)
       end
 
       def battery_date
-        timestamp_for(@hadevice1_urn, "BatteryDate")
+        value_for(URN, 'BatteryDate', as: Time)
       end
 
       def battery_level
-        integer_for(@hadevice1_urn, "BatteryLevel")
+        value_for(URN, 'BatteryLevel', as: Integer)
       end
 
       def first_configured
-        timestamp_for(@hadevice1_urn, "FirstConfigured")
+        value_for(URN, 'FirstConfigured', as: Time)
       end
 
       def last_update
-        timestamp_for(@hadevice1_urn, "LastUpdate")
+        value_for(URN, 'LastUpdate', as: Time)
       end
     end
   end

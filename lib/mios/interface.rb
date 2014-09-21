@@ -1,55 +1,71 @@
 module MiOS
+
   class Interface
-    attr_reader :attributes, :base_uri
+    extend Forwardable
+
+    def_delegator :@client, :device_status
+    def_delegator :@client, :action
+    def_delegator :@client, :job_status
 
     def initialize(base_uri)
-      @base_uri = base_uri
-      @client = HTTPClient.new
-      refresh!
-    end
-
-    def method_missing(method, *args)
-      if @attributes.has_key?(method.to_s)
-        @attributes[method.to_s]
-      else
-        super
-      end
-    end
-
-    def inspect
-      "#<MiOS::Interface:0x#{'%x' % (self.object_id << 1)} @base_uri=#{@base_uri} @attributes=#{@attributes.inspect}>"
+      @client = Client.new(base_uri)
     end
 
     def refresh!
-      data = MultiJson.load(@client.get("#{base_uri}/data_request", {:id => "user_data", :output_format => :json}).content)
-      @attributes = Hash[
-        data.select { |k, v|
-          !data[k].kind_of?(Hash) and !data[k].kind_of?(Array)
-        }.map { |k, v|
-          [k.downcase, v]
-        }
-      ]
-      # Convert some time objects
-      ['loadtime', 'devicesync'].each do |attr|
-        @attributes[attr] = Time.at(@attributes[attr].to_i)
-      end
-      @devices = Hash[
-        data['devices'].map { |device|
-          [device['id'], Device.new(@client, @base_uri, device)]
-        }
-      ]
-
-      true
+      @raw_data, @devices, @attributes, @categories, @rooms, @scenes = nil
     end
 
     def categories
-      @devices.values.map { |device|
-        device.category
-      }.uniq.sort
+      @categories ||= CategoryCollection.new(raw_data['category_filter'])
     end
 
-    def devices; @devices.values; end
-    
-    def device_names; devices.map(&:name); end
+    def devices
+      @devices ||= raw_data['devices'].collect { |d| Device.new(self, d) }
+    end
+
+    def devices_for_label(label)
+      devices.select { |device| device.category && device.category.label == label }
+    end
+
+    def rooms
+      @rooms ||= raw_data['rooms'].collect { |r| Room.new(r['id'], r['name']) }
+    end
+
+    def scenes
+      @scenes ||= raw_data['scenes'].collect { |s| Scene.new(self, s['id'], s['name']) }
+    end
+
+    def device_names
+      devices.map(&:name)
+    end
+
+    def attributes
+      @attributes ||= load_attributes
+    end
+
+    def method_missing(method, *args)
+      attributes[method.to_s] || super
+    end
+
+  private
+
+    def raw_data
+      @raw_data ||= @client.data_request(id: 'user_data')
+    end
+
+    def load_attributes
+      attributes = Hash[
+        raw_data
+          .select { |k, v| !raw_data[k].kind_of?(Hash) && !raw_data[k].kind_of?(Array) }
+          .map { |k, v| [k.downcase, v] }
+      ]
+
+      # Convert some time objects
+      ['loadtime', 'devicesync'].each do |attr|
+        attributes[attr] = MiOS.cast(attributes[attr], as: Time)
+      end
+
+      attributes
+    end
   end
 end

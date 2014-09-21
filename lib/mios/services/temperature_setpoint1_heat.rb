@@ -1,12 +1,11 @@
 module MiOS
   module Services
     module TemperatureSetpoint1Heat
-      def self.extended(base)
-        base.instance_variable_set("@temperaturesetpoint1heat_urn", "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat")
-      end
+
+      URN = 'urn:upnp-org:serviceId:TemperatureSetpoint1_Heat'
 
       def heat_target
-        integer_for(@temperaturesetpoint1heat_urn, 'CurrentSetpoint')
+        value_for URN, 'CurrentSetpoint', as: Integer
       end
     end
   end

@@ -1,25 +1,32 @@
-require 'cgi'
-
 module MiOS
   class Action
-    def initialize(device, service_id, action, parameters={})
-      @device, @service_id, @action, @parameters = device, service_id, action, parameters
-    end
-    
-    def take(async=false, &block)
-      response = MultiJson.load(@device.client.get("#{@device.base_uri}/data_request", url_params).content)
-      # Are there ever more than one jobs from a device action?
-      Job.new(@device, response.values.first['JobID'], async, &block)
+    def initialize(interface, service_id, action, parameters = {})
+      @interface = interface
+      @service_id = service_id
+      @action = action
+      @parameters = parameters
     end
 
-    def url_params
-      {
-        :id => 'action',
-        :DeviceNum => @device.attributes["id"],
-        :action => @action,
-        :serviceId => @service_id,
-        :output_format => :json,
-      }.merge(@parameters)
+    def take(async = false, &block)
+      response = @interface.action(@action, @service_id, @parameters)
+      # Is there ever more than one job from a device action?
+
+      # Device actions return a response with a job ID.  Scene actions
+      # do not.  This is an attempt to abstract that knowledge away
+      # from the caller.
+      if has_job?(response)
+        Job.new(@interface, response.values.first['JobID'], async, &block)
+      else
+        yield if block_given?
+      end
+      response
     end
+
+  private
+
+    def has_job?(response)
+      response.values.first.include? 'JobID'
+    end
+
   end
 end

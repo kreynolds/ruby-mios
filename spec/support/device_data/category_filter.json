@@ -1,0 +1,75 @@
+[
+    {
+        "id": 1,
+        "categories": [],
+        "Label": {
+            "lang_tag": "all",
+            "text": "All"
+        }
+    },
+    {
+        "id": 2,
+        "categories": [
+            "15"
+        ],
+        "Label": {
+            "lang_tag": "av_devices",
+            "text": "Audio/Video"
+        }
+    },
+    {
+        "id": 3,
+        "categories": [
+            "2",
+            "3"
+        ],
+        "Label": {
+            "lang_tag": "lights",
+            "text": "Lights"
+        }
+    },
+    {
+        "id": 4,
+        "categories": [
+            "6"
+        ],
+        "Label": {
+            "lang_tag": "cameras",
+            "text": "Cameras"
+        }
+    },
+    {
+        "id": 5,
+        "categories": [
+            "7"
+        ],
+        "Label": {
+            "lang_tag": "door_locks",
+            "text": "Door locks"
+        }
+    },
+    {
+        "id": 6,
+        "categories": [
+            "4",
+            "12",
+            "16",
+            "17",
+            "18"
+        ],
+        "Label": {
+            "lang_tag": "sensors",
+            "text": "Sensors"
+        }
+    },
+    {
+        "id": 7,
+        "categories": [
+            "5"
+        ],
+        "Label": {
+            "lang_tag": "thermostats",
+            "text": "Thermostats"
+        }
+    }
+]

@@ -1,0 +1,21 @@
+{
+  "id": "12",
+  "device_type": "urn:schemas-upnp-org:device:BinaryLight:1",
+  "id_parent": 1,
+  "embedded": 0,
+  "disabled": 0,
+  "device_file": "D_BinaryLight1.xml",
+  "impl_file": "",
+  "model": "",
+  "altid": "5",
+  "ip": "",
+  "mac": "",
+  "time_created": "1350236784",
+  "category_num": 3,
+  "subcategory_num": 0,
+  "name": "On/Off Outlet",
+  "manufacturer": "GE/Jasco",
+  "room": "1",
+  "onDashboard": 1,
+  "local_udn": "uuid:4d494342-5342-5645-000c-000002161961"
+}
