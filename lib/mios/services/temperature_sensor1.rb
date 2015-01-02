@@ -5,7 +5,7 @@ module MiOS
       URN = 'urn:upnp-org:serviceId:TemperatureSensor1'
 
       def temperature
-        value_for URN 'CurrentTemperature', as: Integer
+        value_for URN, 'CurrentTemperature', as: Integer
       end
     end
   end
