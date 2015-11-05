@@ -9,9 +9,9 @@ module MiOS
       end
 
       def set_level!(new_level, async=false, &block)
-        new_level = new_load_level.to_i
-        new_level = 100 if new_load_level > 100
-        new_level = 0 if new_load_level < 0
+        new_level = new_level.to_i
+        new_level = 100 if new_level > 100
+        new_level = 0 if new_level < 0
         set(URN, 'SetLoadLevelTarget', { "newLoadlevelTarget" => new_level }, async, &block)
       end
     end
