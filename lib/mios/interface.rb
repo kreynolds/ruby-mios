@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module MiOS
 
   class Interface
